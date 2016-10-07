@@ -117,14 +117,16 @@ task cleanup {
 task Deploy -depends Test {
     # Gate deployment
     if( $ENV:BHBuildSystem -ne 'Unknown' -and
-        ( $ENV:BHBranchName -eq "master" -or $ENV:BHBranchName -eq "deploy" ) <#-and
-        $ENV:BHCommitMessage -match '!deploy' #>
+        ( $ENV:BHBranchName -eq "master" -or $ENV:BHBranchName -eq "deploy" ) -and
+        $ENV:BHCommitMessage -match '!deploy' 
     ) {
         $params = @{
             Path = "$projectRoot\module.psdeploy.ps1"
             Force = $true
             Recurse = $false
         }
+
+        Import-Module "$ReleaseDirectory\$ModuleName.psd1"
 
         Invoke-PSDeploy @Params
     } else {
